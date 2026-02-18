@@ -319,7 +319,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
   }
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(tmpdir(), "openclaw-typing-heartbeat-"));
+    fixtureRoot = await fs.mkdtemp(path.join(tmpdir(), "airabot-typing-heartbeat-"));
   });
 
   afterAll(async () => {
@@ -813,7 +813,7 @@ describe("runReplyAgent memory flush", () => {
   }
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(tmpdir(), "openclaw-memory-flush-"));
+    fixtureRoot = await fs.mkdtemp(path.join(tmpdir(), "airabot-memory-flush-"));
   });
 
   afterAll(async () => {

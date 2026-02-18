@@ -159,8 +159,8 @@ describe("chrome extension relay server", () => {
     process.env.OPENCLAW_GATEWAY_TOKEN = "test-gateway-token";
     try {
       const headers = getChromeExtensionRelayAuthHeaders(`http://127.0.0.1:${port}`);
-      expect(Object.keys(headers)).toContain("x-openclaw-relay-token");
-      expect((headers["x-openclaw-relay-token"] ?? "").length).toBeGreaterThan(20);
+      expect(Object.keys(headers)).toContain("x-airabot-relay-token");
+      expect((headers["x-airabot-relay-token"] ?? "").length).toBeGreaterThan(20);
     } finally {
       if (prev === undefined) {
         delete process.env.OPENCLAW_GATEWAY_TOKEN;
@@ -404,7 +404,7 @@ describe("chrome extension relay server", () => {
     }
   });
 
-  it("does not swallow EADDRINUSE when occupied port is not an openclaw relay", async () => {
+  it("does not swallow EADDRINUSE when occupied port is not an airabot relay", async () => {
     const port = await getFreePort();
     const blocker = createServer((_, res) => {
       res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });

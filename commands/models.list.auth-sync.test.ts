@@ -41,12 +41,12 @@ async function pathExists(pathname: string): Promise<boolean> {
 describe("models list auth-profile sync", () => {
   it("marks models available when auth exists only in auth-profiles.json", async () => {
     const env = captureEnv();
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-models-list-auth-sync-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-models-list-auth-sync-"));
 
     try {
       const stateDir = path.join(root, "state");
       const agentDir = path.join(stateDir, "agents", "main", "agent");
-      const configPath = path.join(stateDir, "openclaw.json");
+      const configPath = path.join(stateDir, "airabot.json");
       await fs.mkdir(agentDir, { recursive: true });
       await fs.writeFile(configPath, "{}\n", "utf8");
 

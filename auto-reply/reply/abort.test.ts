@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { SubagentRunRecord } from "../../agents/subagent-registry.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { AiraBotConfig } from "../../config/config.js";
 import {
   getAbortMemory,
   getAbortMemorySizeForTest,
@@ -42,7 +42,7 @@ vi.mock("../../agents/subagent-registry.js", () => ({
 
 describe("abort detection", () => {
   async function runStopCommand(params: {
-    cfg: OpenClawConfig;
+    cfg: AiraBotConfig;
     sessionKey: string;
     from: string;
     to: string;
@@ -67,9 +67,9 @@ describe("abort detection", () => {
   });
 
   it("triggerBodyNormalized extracts /stop from RawBody for abort detection", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as OpenClawConfig;
+    const cfg = { session: { store: storePath } } as AiraBotConfig;
 
     const groupMessageCtx = {
       Body: `[Context]\nJake: /stop\n[from: Jake]`,
@@ -103,7 +103,7 @@ describe("abort detection", () => {
   it("isAbortRequestText aligns abort command semantics", () => {
     expect(isAbortRequestText("/stop")).toBe(true);
     expect(isAbortRequestText("stop")).toBe(true);
-    expect(isAbortRequestText("/stop@openclaw_bot", { botUsername: "openclaw_bot" })).toBe(true);
+    expect(isAbortRequestText("/stop@airabot_bot", { botUsername: "airabot_bot" })).toBe(true);
 
     expect(isAbortRequestText("/status")).toBe(false);
     expect(isAbortRequestText("stop please")).toBe(false);
@@ -129,9 +129,9 @@ describe("abort detection", () => {
   });
 
   it("fast-aborts even when text commands are disabled", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath }, commands: { text: false } } as OpenClawConfig;
+    const cfg = { session: { store: storePath }, commands: { text: false } } as AiraBotConfig;
 
     const result = await runStopCommand({
       cfg,
@@ -144,9 +144,9 @@ describe("abort detection", () => {
   });
 
   it("fast-abort clears queued followups and session lane", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as OpenClawConfig;
+    const cfg = { session: { store: storePath } } as AiraBotConfig;
     const sessionKey = "telegram:123";
     const sessionId = "session-123";
     await fs.writeFile(
@@ -202,9 +202,9 @@ describe("abort detection", () => {
   });
 
   it("fast-abort stops active subagent runs for requester session", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as OpenClawConfig;
+    const cfg = { session: { store: storePath } } as AiraBotConfig;
     const sessionKey = "telegram:parent";
     const childKey = "agent:main:subagent:child-1";
     const sessionId = "session-parent";
@@ -251,9 +251,9 @@ describe("abort detection", () => {
   });
 
   it("cascade stop kills depth-2 children when stopping depth-1 agent", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as OpenClawConfig;
+    const cfg = { session: { store: storePath } } as AiraBotConfig;
     const sessionKey = "telegram:parent";
     const depth1Key = "agent:main:subagent:child-1";
     const depth2Key = "agent:main:subagent:child-1:subagent:grandchild-1";
@@ -326,9 +326,9 @@ describe("abort detection", () => {
   it("cascade stop traverses ended depth-1 parents to stop active depth-2 children", async () => {
     subagentRegistryMocks.listSubagentRunsForRequester.mockReset();
     subagentRegistryMocks.markSubagentRunTerminated.mockClear();
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as OpenClawConfig;
+    const cfg = { session: { store: storePath } } as AiraBotConfig;
     const sessionKey = "telegram:parent";
     const depth1Key = "agent:main:subagent:child-ended";
     const depth2Key = "agent:main:subagent:child-ended:subagent:grandchild-active";

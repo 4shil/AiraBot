@@ -1,9 +1,9 @@
-import type { OpenClawConfig } from "../config/config.js";
+import type { AiraBotConfig } from "../config/config.js";
 
 export function applyOnboardingLocalWorkspaceConfig(
-  baseConfig: OpenClawConfig,
+  baseConfig: AiraBotConfig,
   workspaceDir: string,
-): OpenClawConfig {
+): AiraBotConfig {
   return {
     ...baseConfig,
     agents: {
