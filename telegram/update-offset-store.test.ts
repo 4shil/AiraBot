@@ -10,7 +10,7 @@ import {
 
 async function withTempStateDir<T>(fn: (dir: string) => Promise<T>) {
   const previous = process.env.OPENCLAW_STATE_DIR;
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-tg-offset-"));
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-tg-offset-"));
   process.env.OPENCLAW_STATE_DIR = dir;
   try {
     return await fn(dir);

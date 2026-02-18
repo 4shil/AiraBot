@@ -9,7 +9,7 @@ describe("resolveProviderAuths key normalization", () => {
   let suiteCase = 0;
 
   beforeAll(async () => {
-    suiteRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-provider-auth-suite-"));
+    suiteRoot = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-provider-auth-suite-"));
   });
 
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe("resolveProviderAuths key normalization", () => {
   ): Promise<T> {
     const base = path.join(suiteRoot, `case-${++suiteCase}`);
     await fs.mkdir(base, { recursive: true });
-    await fs.mkdir(path.join(base, ".openclaw", "agents", "main", "sessions"), { recursive: true });
+    await fs.mkdir(path.join(base, ".airabot", "agents", "main", "sessions"), { recursive: true });
 
     const keysToRestore = new Set<string>([
       "HOME",
@@ -43,7 +43,7 @@ describe("resolveProviderAuths key normalization", () => {
     process.env.HOME = base;
     process.env.USERPROFILE = base;
     delete process.env.OPENCLAW_HOME;
-    process.env.OPENCLAW_STATE_DIR = path.join(base, ".openclaw");
+    process.env.OPENCLAW_STATE_DIR = path.join(base, ".airabot");
     for (const [key, value] of Object.entries(env)) {
       if (value === undefined) {
         delete process.env[key];
@@ -87,7 +87,7 @@ describe("resolveProviderAuths key normalization", () => {
   it("strips embedded CR/LF from stored auth profiles (token + api_key)", async () => {
     await withSuiteHome(
       async (home) => {
-        const agentDir = path.join(home, ".openclaw", "agents", "main", "agent");
+        const agentDir = path.join(home, ".airabot", "agents", "main", "agent");
         await fs.mkdir(agentDir, { recursive: true });
         await fs.writeFile(
           path.join(agentDir, "auth-profiles.json"),

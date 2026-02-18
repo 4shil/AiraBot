@@ -21,7 +21,7 @@ describe("device identity state dir defaults", () => {
   });
 
   it("writes the default identity file under OPENCLAW_STATE_DIR", async () => {
-    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-identity-state-"));
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-identity-state-"));
     const stateDir = path.join(tempRoot, "state");
     setStateDirEnv(stateDir);
     const identity = loadOrCreateDeviceIdentity();
