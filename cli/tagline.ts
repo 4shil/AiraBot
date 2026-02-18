@@ -1,4 +1,4 @@
-const DEFAULT_TAGLINE = "All your chats, one OpenClaw.";
+const DEFAULT_TAGLINE = "All your chats, one AiraBot.";
 
 const HOLIDAY_TAGLINES = {
   newYear:
