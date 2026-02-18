@@ -12,8 +12,8 @@ async function withTempConfig(
   configContent: string,
   run: (configPath: string) => Promise<void>,
 ): Promise<void> {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-env-io-"));
-  const configPath = path.join(dir, "openclaw.json");
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-env-io-"));
+  const configPath = path.join(dir, "airabot.json");
   await fs.writeFile(configPath, configContent);
   try {
     await run(configPath);

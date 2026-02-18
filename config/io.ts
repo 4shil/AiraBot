@@ -38,12 +38,12 @@ import { applyMergePatch } from "./merge-patch.js";
 import { normalizeConfigPaths } from "./normalize-paths.js";
 import { resolveConfigPath, resolveDefaultConfigCandidates, resolveStateDir } from "./paths.js";
 import { applyConfigOverrides } from "./runtime-overrides.js";
-import type { OpenClawConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
+import type { AiraBotConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
 import {
   validateConfigObjectRawWithPlugins,
   validateConfigObjectWithPlugins,
 } from "./validation.js";
-import { compareOpenClawVersions } from "./version.js";
+import { compareAiraBotVersions } from "./version.js";
 
 // Re-export for backwards compatibility
 export { CircularIncludeError, ConfigIncludeError } from "./includes.js";
@@ -144,11 +144,11 @@ export function resolveConfigSnapshotHash(snapshot: {
   return hashConfigRaw(snapshot.raw);
 }
 
-function coerceConfig(value: unknown): OpenClawConfig {
+function coerceConfig(value: unknown): AiraBotConfig {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
   }
-  return value as OpenClawConfig;
+  return value as AiraBotConfig;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -413,7 +413,7 @@ function warnOnConfigMiskeys(raw: unknown, logger: Pick<typeof console, "warn">)
   }
 }
 
-function stampConfigVersion(cfg: OpenClawConfig): OpenClawConfig {
+function stampConfigVersion(cfg: AiraBotConfig): AiraBotConfig {
   const now = new Date().toISOString();
   return {
     ...cfg,
@@ -425,18 +425,18 @@ function stampConfigVersion(cfg: OpenClawConfig): OpenClawConfig {
   };
 }
 
-function warnIfConfigFromFuture(cfg: OpenClawConfig, logger: Pick<typeof console, "warn">): void {
+function warnIfConfigFromFuture(cfg: AiraBotConfig, logger: Pick<typeof console, "warn">): void {
   const touched = cfg.meta?.lastTouchedVersion;
   if (!touched) {
     return;
   }
-  const cmp = compareOpenClawVersions(VERSION, touched);
+  const cmp = compareAiraBotVersions(VERSION, touched);
   if (cmp === null) {
     return;
   }
   if (cmp < 0) {
     logger.warn(
-      `Config was last written by a newer OpenClaw (${touched}); current version is ${VERSION}.`,
+      `Config was last written by a newer AiraBot (${touched}); current version is ${VERSION}.`,
     );
   }
 }
@@ -502,7 +502,7 @@ function resolveConfigForRead(
 ): ConfigReadResolution {
   // Apply config.env to process.env BEFORE substitution so ${VAR} can reference config-defined vars.
   if (resolvedIncludes && typeof resolvedIncludes === "object" && "env" in resolvedIncludes) {
-    applyConfigEnvVars(resolvedIncludes as OpenClawConfig, env);
+    applyConfigEnvVars(resolvedIncludes as AiraBotConfig, env);
   }
 
   return {
@@ -526,7 +526,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
   const configPath =
     candidatePaths.find((candidate) => deps.fs.existsSync(candidate)) ?? requestedConfigPath;
 
-  function loadConfig(): OpenClawConfig {
+  function loadConfig(): AiraBotConfig {
     try {
       maybeLoadDotEnvForConfig(deps.env);
       if (!deps.fs.existsSync(configPath)) {
@@ -551,7 +551,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       if (typeof resolvedConfig !== "object" || resolvedConfig === null) {
         return {};
       }
-      const preValidationDuplicates = findDuplicateAgentDirs(resolvedConfig as OpenClawConfig, {
+      const preValidationDuplicates = findDuplicateAgentDirs(resolvedConfig as AiraBotConfig, {
         env: deps.env,
         homedir: deps.homedir,
       });
@@ -817,7 +817,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     };
   }
 
-  async function writeConfigFile(cfg: OpenClawConfig, options: ConfigWriteOptions = {}) {
+  async function writeConfigFile(cfg: AiraBotConfig, options: ConfigWriteOptions = {}) {
     clearConfigCache();
     let persistCandidate: unknown = cfg;
     const { snapshot } = await readConfigFileSnapshotInternal();
@@ -879,7 +879,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
             cfgToWrite,
             parsedRes.parsed,
             envForRestore,
-          ) as OpenClawConfig;
+          ) as AiraBotConfig;
         }
       }
     } catch {
@@ -890,7 +890,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     await deps.fs.promises.mkdir(dir, { recursive: true, mode: 0o700 });
     const outputConfig =
       envRefMap && changedPaths
-        ? (restoreEnvRefsFromMap(cfgToWrite, "", envRefMap, changedPaths) as OpenClawConfig)
+        ? (restoreEnvRefsFromMap(cfgToWrite, "", envRefMap, changedPaths) as AiraBotConfig)
         : cfgToWrite;
     // Do NOT apply runtime defaults when writing — user config should only contain
     // explicitly set values. Runtime defaults are applied when loading (issue #6070).
@@ -1059,7 +1059,7 @@ const DEFAULT_CONFIG_CACHE_MS = 200;
 let configCache: {
   configPath: string;
   expiresAt: number;
-  config: OpenClawConfig;
+  config: AiraBotConfig;
 } | null = null;
 
 function resolveConfigCacheMs(env: NodeJS.ProcessEnv): number {
@@ -1088,7 +1088,7 @@ export function clearConfigCache(): void {
   configCache = null;
 }
 
-export function loadConfig(): OpenClawConfig {
+export function loadConfig(): AiraBotConfig {
   const io = createConfigIO();
   const configPath = io.configPath;
   const now = Date.now();
@@ -1121,7 +1121,7 @@ export async function readConfigFileSnapshotForWrite(): Promise<ReadConfigFileSn
 }
 
 export async function writeConfigFile(
-  cfg: OpenClawConfig,
+  cfg: AiraBotConfig,
   options: ConfigWriteOptions = {},
 ): Promise<void> {
   const io = createConfigIO();

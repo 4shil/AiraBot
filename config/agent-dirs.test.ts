@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { findDuplicateAgentDirs } from "./agent-dirs.js";
-import type { OpenClawConfig } from "./types.js";
+import type { AiraBotConfig } from "./types.js";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -15,14 +15,14 @@ describe("resolveEffectiveAgentDir via findDuplicateAgentDirs", () => {
     // since they have different IDs.  Instead we just verify no crash and
     // that the env flows through by checking a two-agent config produces
     // distinct dirs (no duplicates).
-    const cfg: OpenClawConfig = {
+    const cfg: AiraBotConfig = {
       agents: {
         list: [{ id: "alpha" }, { id: "beta" }],
       },
     };
 
     const env = {
-      OPENCLAW_HOME: "/srv/openclaw-home",
+      OPENCLAW_HOME: "/srv/airabot-home",
       HOME: "/home/other",
     } as NodeJS.ProcessEnv;
 
@@ -34,10 +34,10 @@ describe("resolveEffectiveAgentDir via findDuplicateAgentDirs", () => {
     // Force two agents to the same explicit agentDir to verify the path
     // that doesn't use the default — then test the default path by
     // checking that a single-agent config resolves without duplicates.
-    const cfg: OpenClawConfig = {};
+    const cfg: AiraBotConfig = {};
 
     const env = {
-      OPENCLAW_HOME: "/srv/openclaw-home",
+      OPENCLAW_HOME: "/srv/airabot-home",
     } as NodeJS.ProcessEnv;
 
     // No duplicates for a single default agent

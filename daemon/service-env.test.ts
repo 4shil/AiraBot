@@ -273,12 +273,12 @@ describe("buildServiceEnvironment", () => {
     }
     expect(env.OPENCLAW_GATEWAY_PORT).toBe("18789");
     expect(env.OPENCLAW_GATEWAY_TOKEN).toBe("secret");
-    expect(env.OPENCLAW_SERVICE_MARKER).toBe("openclaw");
+    expect(env.OPENCLAW_SERVICE_MARKER).toBe("airabot");
     expect(env.OPENCLAW_SERVICE_KIND).toBe("gateway");
     expect(typeof env.OPENCLAW_SERVICE_VERSION).toBe("string");
-    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway.service");
+    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("airabot-gateway.service");
     if (process.platform === "darwin") {
-      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.gateway");
+      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.airabot.gateway");
     }
   });
 
@@ -287,9 +287,9 @@ describe("buildServiceEnvironment", () => {
       env: { HOME: "/home/user", OPENCLAW_PROFILE: "work" },
       port: 18789,
     });
-    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("openclaw-gateway-work.service");
+    expect(env.OPENCLAW_SYSTEMD_UNIT).toBe("airabot-gateway-work.service");
     if (process.platform === "darwin") {
-      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.openclaw.work");
+      expect(env.OPENCLAW_LAUNCHD_LABEL).toBe("ai.airabot.work");
     }
   });
 });
@@ -306,31 +306,31 @@ describe("buildNodeServiceEnvironment", () => {
 describe("resolveGatewayStateDir", () => {
   it("uses the default state dir when no overrides are set", () => {
     const env = { HOME: "/Users/test" };
-    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".openclaw"));
+    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".airabot"));
   });
 
   it("appends the profile suffix when set", () => {
     const env = { HOME: "/Users/test", OPENCLAW_PROFILE: "rescue" };
-    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".openclaw-rescue"));
+    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".airabot-rescue"));
   });
 
   it("treats default profiles as the base state dir", () => {
     const env = { HOME: "/Users/test", OPENCLAW_PROFILE: "Default" };
-    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".openclaw"));
+    expect(resolveGatewayStateDir(env)).toBe(path.join("/Users/test", ".airabot"));
   });
 
   it("uses OPENCLAW_STATE_DIR when provided", () => {
-    const env = { HOME: "/Users/test", OPENCLAW_STATE_DIR: "/var/lib/openclaw" };
-    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/var/lib/openclaw"));
+    const env = { HOME: "/Users/test", OPENCLAW_STATE_DIR: "/var/lib/airabot" };
+    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/var/lib/airabot"));
   });
 
   it("expands ~ in OPENCLAW_STATE_DIR", () => {
-    const env = { HOME: "/Users/test", OPENCLAW_STATE_DIR: "~/openclaw-state" };
-    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/Users/test/openclaw-state"));
+    const env = { HOME: "/Users/test", OPENCLAW_STATE_DIR: "~/airabot-state" };
+    expect(resolveGatewayStateDir(env)).toBe(path.resolve("/Users/test/airabot-state"));
   });
 
   it("preserves Windows absolute paths without HOME", () => {
-    const env = { OPENCLAW_STATE_DIR: "C:\\State\\openclaw" };
-    expect(resolveGatewayStateDir(env)).toBe("C:\\State\\openclaw");
+    const env = { OPENCLAW_STATE_DIR: "C:\\State\\airabot" };
+    expect(resolveGatewayStateDir(env)).toBe("C:\\State\\airabot");
   });
 });

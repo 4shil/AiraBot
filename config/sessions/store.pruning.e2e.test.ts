@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { clearSessionStoreCacheForTest, loadSessionStore, saveSessionStore } from "./store.js";
 import type { SessionEntry } from "./types.js";
 
-// Keep integration tests deterministic: never read a real openclaw.json.
+// Keep integration tests deterministic: never read a real airabot.json.
 vi.mock("../config.js", () => ({
   loadConfig: vi.fn().mockReturnValue({}),
 }));
@@ -48,7 +48,7 @@ describe("Integration: saveSessionStore with pruning", () => {
   let mockLoadConfig: ReturnType<typeof vi.fn>;
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-pruning-integ-"));
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-pruning-integ-"));
   });
 
   afterAll(async () => {

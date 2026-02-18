@@ -11,16 +11,16 @@ import {
 
 const ROOT_DIR = path.parse(process.cwd()).root;
 const CONFIG_DIR = path.join(ROOT_DIR, "config");
-const ETC_OPENCLAW_DIR = path.join(ROOT_DIR, "etc", "openclaw");
+const ETC_OPENCLAW_DIR = path.join(ROOT_DIR, "etc", "airabot");
 const SHARED_DIR = path.join(ROOT_DIR, "shared");
 
-const DEFAULT_BASE_PATH = path.join(CONFIG_DIR, "openclaw.json");
+const DEFAULT_BASE_PATH = path.join(CONFIG_DIR, "airabot.json");
 
 function configPath(...parts: string[]) {
   return path.join(CONFIG_DIR, ...parts);
 }
 
-function etcOpenClawPath(...parts: string[]) {
+function etcAiraBotPath(...parts: string[]) {
   return path.join(ETC_OPENCLAW_DIR, ...parts);
 }
 
@@ -70,7 +70,7 @@ describe("resolveConfigIncludes", () => {
   });
 
   it("rejects absolute path outside config directory (CWE-22)", () => {
-    const absolute = etcOpenClawPath("agents.json");
+    const absolute = etcAiraBotPath("agents.json");
     const files = { [absolute]: { list: [{ id: "main" }] } };
     const obj = { agents: { $include: absolute } };
     expect(() => resolve(obj, files)).toThrow(ConfigIncludeError);
@@ -282,10 +282,10 @@ describe("resolveConfigIncludes", () => {
   it("rejects parent directory traversal escaping config directory (CWE-22)", () => {
     const files = { [sharedPath("common.json")]: { shared: true } };
     const obj = { $include: "../../shared/common.json" };
-    expect(() => resolve(obj, files, configPath("sub", "openclaw.json"))).toThrow(
+    expect(() => resolve(obj, files, configPath("sub", "airabot.json"))).toThrow(
       ConfigIncludeError,
     );
-    expect(() => resolve(obj, files, configPath("sub", "openclaw.json"))).toThrow(
+    expect(() => resolve(obj, files, configPath("sub", "airabot.json"))).toThrow(
       /escapes config directory/,
     );
   });
@@ -542,7 +542,7 @@ describe("security: path traversal protection (CWE-22)", () => {
     });
 
     it("allows include files when the config root path is a symlink", async () => {
-      const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-includes-symlink-"));
+      const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-includes-symlink-"));
       try {
         const realRoot = path.join(tempRoot, "real");
         const linkRoot = path.join(tempRoot, "link");
@@ -556,7 +556,7 @@ describe("security: path traversal protection (CWE-22)", () => {
 
         const result = resolveConfigIncludes(
           { $include: "./includes/extra.json5" },
-          path.join(linkRoot, "openclaw.json"),
+          path.join(linkRoot, "airabot.json"),
         );
         expect(result).toEqual({ logging: { redactSensitive: "tools" } });
       } finally {

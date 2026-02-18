@@ -26,7 +26,7 @@ describe("sessions", () => {
   };
 
   beforeAll(async () => {
-    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-sessions-suite-"));
+    fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "airabot-sessions-suite-"));
   });
 
   afterAll(async () => {
@@ -72,11 +72,11 @@ describe("sessions", () => {
       buildGroupDisplayName({
         provider: "discord",
         groupChannel: "#general",
-        space: "friends-of-openclaw",
+        space: "friends-of-airabot",
         id: "123",
         key: "discord:group:123",
       }),
-    ).toBe("discord:friends-of-openclaw#general");
+    ).toBe("discord:friends-of-airabot#general");
   });
 
   it("collapses direct chats to main by default", () => {
@@ -471,7 +471,7 @@ describe("sessions", () => {
 
   it("resolves cross-agent absolute sessionFile paths", () => {
     const prev = process.env.OPENCLAW_STATE_DIR;
-    const stateDir = path.resolve("/home/user/.openclaw");
+    const stateDir = path.resolve("/home/user/.airabot");
     process.env.OPENCLAW_STATE_DIR = stateDir;
     try {
       const bot2Session = path.join(stateDir, "agents", "bot2", "sessions", "sess-1.jsonl");
@@ -515,7 +515,7 @@ describe("sessions", () => {
 
   it("rejects absolute sessionFile paths outside agent sessions directories", () => {
     const prev = process.env.OPENCLAW_STATE_DIR;
-    process.env.OPENCLAW_STATE_DIR = path.resolve("/home/user/.openclaw");
+    process.env.OPENCLAW_STATE_DIR = path.resolve("/home/user/.airabot");
     try {
       expect(() =>
         resolveSessionFilePath(
