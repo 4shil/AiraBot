@@ -1,0 +1,11 @@
+{
+  "personalityMode": "auto",
+  "language": "manglish",
+  "liveUpdates": {
+    "enabled": true,
+    "sources": ["manorama", "mathrubhumi", "asianet", "hn", "producthunt"],
+    "intervalMinutes": 60
+  },
+  "weather": { "district": "Kochi" },
+  "food": { "defaultCuisine": "kerala" }
+}
