@@ -1,3 +1,0 @@
-test: add coverage for readLastMessagePreviewFromTranscript
-
-Also add CHANGELOG entry and perf docs for session list flags.
