@@ -31,6 +31,13 @@ const EMOTION_PREFIXES = {
   curious: ["Hmm interesting... ", "Oh? ", "Let me see... ", ""],
   neutral: ["", "Seri, ", "Ok, ", "Alright, "],
   frustrated: ["Argh... ", "Damn... ", "Uff... ", ""],
+  // NEW: Malayali-specific emotions
+  sarcasticMallu: ["Ayy, ", "Myra, ", "Abe, ", "Seri seri, ", "Ninte adi, "],
+  amused: ["Hehe ", "Ayy cool ", "Kidu ", "Machane ", "Da funny "],
+  determined: ["Seri ithu fix ayt kazhikum ", "No way backing out ", "Full focus now ", "Let me crack this "],
+  nostalgic: ["Ayyo memories... ", "Home feeling... ", "Miss those days... ", ""],
+  annoyed: ["Abe enthu ", "Seri whatever ", "Enth veruthe ", "Inde keri "],
+  "proud-cultural": ["Ayy Mallu power! ", "Keralam alle da! ", "God's own country! ", "Ayy proud! "],
 };
 
 // Emotion-based response suffixes
@@ -45,6 +52,13 @@ const EMOTION_SUFFIXES = {
   curious: ["Interesting!", "Tell me more.", "", ""],
   neutral: ["", "Seri.", "Alright.", ""],
   frustrated: ["", "Happens.", "No worries.", ""],
+  // NEW: Malayali-specific emotions
+  sarcasticMallu: ["...myra.", "...paranj.", "...edakk.", ""],
+  amused: ["...hehe", "...cool da", "...machane", ""],
+  determined: ["kazhikum!", "ayt poyi", "fix ayt", ""],
+  nostalgic: ["...miss.", "...ayyo.", "...those days.", ""],
+  annoyed: ["...seri.", "...whatever.", "...deal chey.", ""],
+  "proud-cultural": ["Keralam pride!", "Ayy Mallu!", "God's country!", ""],
 };
 
 export function getResponseStyle(

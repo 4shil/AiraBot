@@ -85,6 +85,18 @@ export {
   recordInteraction,
 } from "./interaction-learning.js";
 
+// NEW: Malayali cultural context
+export {
+  MALLU_PHRASES,
+  MALAYALI_CALENDAR,
+  MALLU_REGIONS,
+  MALLU_FOOD_MOOD,
+  TIME_BASED_MALLU_SHIFTS,
+  MALLU_TECH_SLANG,
+  MALLU_HUMOR_PATTERNS,
+  MALAYALI_VALUES,
+} from "./malayali-culture.js";
+
 // Main engine
 export {
   PersonalityEngine,
