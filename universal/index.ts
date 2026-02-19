@@ -8,4 +8,5 @@ export * from "./weather.js";
 export * from "./food-delivery.js";
 export * from "./travel-tourism.js";
 export * from "./news-media.js";
+export * from "./live-updates.js";
 export * from "./voice-assistant.js";

@@ -146,6 +146,7 @@ export * from "../universal/food-delivery.js";
 export * from "../universal/travel-tourism.js";
 export * from "../universal/news-media.js";
 export * from "../universal/voice-assistant.js";
+export * from "../universal/live-updates.js";
 export * from "../teens/index.js";
 export * from "../tech/index.js";
 export * from "../elder/index.js";
