@@ -332,6 +332,7 @@ Built on top of [OpenClaw](https://github.com/openclaw/openclaw) by the OpenClaw
 - Proactive intelligence
 - Productivity tools
 - Kerala-specific features
+- Live updates (RSS + trends placeholders)
 
 **By:** [4shil](https://github.com/4shil)
 
