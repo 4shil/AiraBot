@@ -309,3 +309,99 @@ export async function getPatternDetector(
   }
   return globalDetector;
 }
+
+// ─── Real git log scanning ────────────────────────────────────────────────────
+
+import { promises as fsp } from 'fs';
+import { simpleGit } from 'simple-git';
+
+export interface RepoStats {
+  repoPath: string;
+  repoName: string;
+  commitCount: number;
+  peakHours: number[];
+  commitsByDow: number[]; // 0-6
+  authors: string[];
+  commonPatterns: string[];
+  lastCommitDate: string;
+}
+
+export async function scanWorkspaceRepos(workspaceDir: string): Promise<RepoStats[]> {
+  const results: RepoStats[] = [];
+  let entries: string[] = [];
+  try {
+    const dirents = await fsp.readdir(workspaceDir, { withFileTypes: true });
+    entries = dirents.filter((d) => d.isDirectory()).map((d) => d.name);
+  } catch {
+    return results;
+  }
+
+  for (const name of entries) {
+    const repoPath = join(workspaceDir, name);
+    try {
+      const git = simpleGit(repoPath);
+      const isRepo = await git.checkIsRepo();
+      if (!isRepo) continue;
+
+      const log = await git.log([
+        '--since=30.days',
+        '--format=%H|%ae|%ad|%s',
+        '--date=iso',
+      ]);
+
+      const commitsByHour: number[] = new Array(24).fill(0);
+      const commitsByDow: number[] = new Array(7).fill(0);
+      const authors = new Set<string>();
+      const patterns: Record<string, number> = {};
+
+      for (const entry of log.all) {
+        const line = `${entry.hash}|${entry.author_email}|${entry.date}|${entry.message}`;
+        const parts = line.split('|');
+        if (parts.length < 4) continue;
+        const [, email, dateStr, ...msgParts] = parts;
+        const msg = msgParts.join('|');
+        if (email) authors.add(email);
+
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+          commitsByHour[d.getHours()]++;
+          commitsByDow[d.getDay()]++;
+        }
+
+        // Extract common prefix patterns (feat:, fix:, chore:, etc.)
+        const prefixMatch = msg.match(/^(\w+)[\(:]/);
+        if (prefixMatch) {
+          const prefix = prefixMatch[1].toLowerCase();
+          patterns[prefix] = (patterns[prefix] ?? 0) + 1;
+        }
+      }
+
+      const peakHours = commitsByHour
+        .map((count, hour) => ({ count, hour }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3)
+        .filter((x) => x.count > 0)
+        .map((x) => x.hour);
+
+      const commonPatterns = Object.entries(patterns)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([k]) => k);
+
+      results.push({
+        repoPath,
+        repoName: name,
+        commitCount: log.total,
+        peakHours,
+        commitsByDow,
+        authors: [...authors],
+        commonPatterns,
+        lastCommitDate: log.latest?.date ?? 'unknown',
+      });
+    } catch {
+      // Skip repos that fail
+    }
+  }
+
+  return results;
+}
