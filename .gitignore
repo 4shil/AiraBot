@@ -1,0 +1,10 @@
+dist/
+node_modules/
+.airabot/
+*.js
+!.eslintrc.js
+*.d.ts
+*.js.map
+.env
+coverage/
+*.tsbuildinfo
