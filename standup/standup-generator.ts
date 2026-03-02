@@ -343,3 +343,126 @@ export function getStandupGenerator(workspaceDir?: string): StandupGenerator {
   }
   return globalGenerator;
 }
+
+// ─── Multi-repo standup support ───────────────────────────────────────────────
+
+import { simpleGit } from 'simple-git';
+import { promises as fsp } from 'fs';
+
+export interface RepoStandup {
+  repoName: string;
+  commits: string[];
+  commitCount: number;
+}
+
+export interface MultiRepoStandup {
+  date: string;
+  repos: RepoStandup[];
+  totalCommits: number;
+}
+
+async function findGitRepos(baseDir: string): Promise<string[]> {
+  const repos: string[] = [];
+  try {
+    const entries = await fsp.readdir(baseDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const repoPath = join(baseDir, entry.name);
+      try {
+        const git = simpleGit(repoPath);
+        if (await git.checkIsRepo()) repos.push(repoPath);
+      } catch { /* skip */ }
+    }
+  } catch { /* ignore */ }
+  return repos;
+}
+
+export async function generateMultiRepoStandup(options: {
+  baseDir?: string;
+  days?: number;
+}): Promise<MultiRepoStandup> {
+  const baseDir = options.baseDir ?? join(homedir(), 'Coding');
+  const days = options.days ?? 1;
+  const repos = await findGitRepos(baseDir);
+
+  const since = days === 1 ? 'yesterday' : `${days}.days`;
+  const result: MultiRepoStandup = {
+    date: new Date().toISOString().split('T')[0] ?? '',
+    repos: [],
+    totalCommits: 0,
+  };
+
+  for (const repoPath of repos) {
+    const repoName = repoPath.split('/').pop() ?? repoPath;
+    try {
+      const git = simpleGit(repoPath);
+      const log = await git.log(['--since=' + since, '--format=%s']);
+      const commits = log.all.map((c) => c.message).filter(Boolean);
+      if (commits.length > 0) {
+        result.repos.push({ repoName, commits, commitCount: commits.length });
+        result.totalCommits += commits.length;
+      }
+    } catch { /* skip */ }
+  }
+
+  return result;
+}
+
+export function formatMultiRepoStandup(
+  standup: MultiRepoStandup,
+  format: 'slack' | 'discord' | 'plain' = 'plain',
+): string {
+  const lines: string[] = [];
+  const date = standup.date;
+
+  if (format === 'slack') {
+    lines.push(`*Daily Standup — ${date}* 📋`);
+    for (const repo of standup.repos) {
+      lines.push(`\n*${repo.repoName}* (${repo.commitCount} commit${repo.commitCount !== 1 ? 's' : ''})`);
+      for (const commit of repo.commits.slice(0, 5)) {
+        lines.push(`  • ${commit}`);
+      }
+    }
+    if (standup.repos.length === 0) lines.push('_No commits found in the period._');
+  } else if (format === 'discord') {
+    lines.push(`**Daily Standup — ${date}** 📋`);
+    for (const repo of standup.repos) {
+      lines.push(`\n**${repo.repoName}** (${repo.commitCount} commits)`);
+      for (const commit of repo.commits.slice(0, 5)) {
+        lines.push(`  • ${commit}`);
+      }
+    }
+    if (standup.repos.length === 0) lines.push('_No commits found._');
+  } else {
+    lines.push(`Daily Standup — ${date}`);
+    lines.push('='.repeat(40));
+    for (const repo of standup.repos) {
+      lines.push(`\n[${repo.repoName}] (${repo.commitCount} commits)`);
+      for (const commit of repo.commits.slice(0, 5)) {
+        lines.push(`  - ${commit}`);
+      }
+    }
+    if (standup.repos.length === 0) lines.push('No commits found in the period.');
+  }
+
+  lines.push(`\nTotal: ${standup.totalCommits} commit${standup.totalCommits !== 1 ? 's' : ''} across ${standup.repos.length} repo${standup.repos.length !== 1 ? 's' : ''}`);
+  return lines.join('\n');
+}
+
+// Convenience method used by CLI
+export class StandupGeneratorExt {
+  async generateForAllRepos(options: {
+    format?: 'slack' | 'discord' | 'plain';
+    days?: number;
+    baseDir?: string;
+  }): Promise<string> {
+    const standup = await generateMultiRepoStandup({
+      baseDir: options.baseDir,
+      days: options.days ?? 1,
+    });
+    return formatMultiRepoStandup(standup, options.format ?? 'plain');
+  }
+}
+
+// Re-export with same name expected by CLI
+export { StandupGeneratorExt as StandupGenerator };
