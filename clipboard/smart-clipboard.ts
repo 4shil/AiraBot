@@ -232,6 +232,14 @@ export class SmartClipboard {
     return filtered.slice(-limit).reverse();
   }
 
+  list(): ClipboardEntry[] {
+    return [...this.history].reverse();
+  }
+
+  clear(): void {
+    this.history = [];
+  }
+
   getById(id: string): ClipboardEntry | undefined {
     return this.history.find(e => e.id === id);
   }
@@ -280,4 +288,58 @@ export async function getSmartClipboard(workspaceDir?: string): Promise<SmartCli
     await globalClipboard.load();
   }
   return globalClipboard;
+}
+
+// ─── System clipboard watching and extended methods ───────────────────────────
+
+import { spawn, type ChildProcess } from 'child_process';
+
+let watcherProcess: ChildProcess | null = null;
+
+/**
+ * Start watching the system clipboard via wl-paste --watch (Wayland).
+ * Falls back to polling with xclip on X11.
+ */
+export function startClipboardWatcher(cb: SmartClipboard): void {
+  if (watcherProcess) return; // already watching
+
+  try {
+    watcherProcess = spawn('wl-paste', ['--watch', 'cat'], {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+
+    let buffer = '';
+    watcherProcess.stdout?.on('data', (chunk: Buffer) => {
+      buffer += chunk.toString();
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed) {
+          const last = cb.list()[0];
+          if (!last || last.content !== trimmed) {
+            cb.add(trimmed);
+            cb.save().catch(() => { /* ignore */ });
+          }
+        }
+      }
+    });
+
+    watcherProcess.on('error', () => {
+      watcherProcess = null;
+    });
+
+    watcherProcess.on('exit', () => {
+      watcherProcess = null;
+    });
+  } catch {
+    watcherProcess = null;
+  }
+}
+
+export function stopClipboardWatcher(): void {
+  if (watcherProcess) {
+    watcherProcess.kill('SIGTERM');
+    watcherProcess = null;
+  }
 }
