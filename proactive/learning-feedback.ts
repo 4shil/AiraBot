@@ -248,3 +248,69 @@ export async function getLearningFeedback(
   }
   return globalFeedback;
 }
+
+// ─── Extended feedback API for CLI ────────────────────────────────────────────
+
+const FEEDBACK_PATH = join(homedir(), '.airabot', 'feedback.json');
+
+export interface FeedbackRecord {
+  suggestionId: string;
+  category: string;
+  reaction: 'yes' | 'no' | 'never';
+  timestamp: number;
+}
+
+export interface SuggestionScore {
+  category: string;
+  score: number; // 0-1
+  totalVotes: number;
+  neverBlocked: boolean;
+}
+
+let feedbackStore: FeedbackRecord[] = [];
+
+async function loadFeedbackStore(): Promise<void> {
+  try {
+    const data = await fs.readFile(FEEDBACK_PATH, 'utf-8');
+    feedbackStore = JSON.parse(data) as FeedbackRecord[];
+  } catch {
+    feedbackStore = [];
+  }
+}
+
+async function saveFeedbackStore(): Promise<void> {
+  await fs.mkdir(join(homedir(), '.airabot'), { recursive: true });
+  await fs.writeFile(FEEDBACK_PATH, JSON.stringify(feedbackStore, null, 2));
+}
+
+export async function recordFeedback(
+  suggestionId: string,
+  category: string,
+  reaction: 'yes' | 'no' | 'never',
+): Promise<void> {
+  await loadFeedbackStore();
+  feedbackStore.push({ suggestionId, category, reaction, timestamp: Date.now() });
+  feedbackStore = feedbackStore.slice(-2000);
+  await saveFeedbackStore();
+}
+
+export async function getSuggestionScore(category: string): Promise<number> {
+  await loadFeedbackStore();
+  const relevant = feedbackStore.filter((f) => f.category === category);
+  if (relevant.length === 0) return 0.5; // neutral default
+
+  const yes = relevant.filter((f) => f.reaction === 'yes').length;
+  const no = relevant.filter((f) => f.reaction === 'no').length;
+  const never = relevant.filter((f) => f.reaction === 'never').length;
+
+  if (never > 0) return 0; // blocked
+  if (yes + no === 0) return 0.5;
+  return yes / (yes + no);
+}
+
+export async function shouldShowSuggestion(category: string): Promise<boolean> {
+  const score = await getSuggestionScore(category);
+  if (score === 0) return false; // never
+  if (score < 0.2) return false; // too negative
+  return true;
+}
