@@ -326,3 +326,139 @@ export async function getTaskEstimator(workspaceDir?: string): Promise<TaskTimeE
   }
   return globalEstimator;
 }
+
+// ─── Extended TaskEstimator for CLI ──────────────────────────────────────────
+
+import { promises as fsp } from 'fs';
+import { join as pathJoin } from 'path';
+import { homedir as osHomedir } from 'os';
+import { createHash } from 'crypto';
+
+const TASK_HISTORY_PATH = pathJoin(osHomedir(), '.airabot', 'task-history.json');
+
+export interface TaskHistoryEntry {
+  id: string;
+  type: string;
+  complexity: 'low' | 'medium' | 'high';
+  baseMinutes: number;
+  estimatedMinutes: number;
+  actualMinutes?: number;
+  emaAccuracy?: number; // rolling EMA of actual/estimated
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface EstimateResult {
+  id: string;
+  estimatedMinutes: number;
+  rangeMin: number;
+  rangeMax: number;
+  confidence: number;
+}
+
+export interface AccuracyReport {
+  overall: number; // 0-1 (1 = perfect)
+  byType: Record<string, number>;
+}
+
+// Complexity multipliers
+const COMPLEXITY_MULT: Record<string, number> = {
+  low: 0.8,
+  medium: 1.0,
+  high: 1.6,
+};
+
+let historyCache: TaskHistoryEntry[] | null = null;
+
+async function loadHistory(): Promise<TaskHistoryEntry[]> {
+  if (historyCache) return historyCache;
+  try {
+    const data = await fsp.readFile(TASK_HISTORY_PATH, 'utf-8');
+    historyCache = JSON.parse(data) as TaskHistoryEntry[];
+  } catch {
+    historyCache = [];
+  }
+  return historyCache;
+}
+
+async function saveHistory(history: TaskHistoryEntry[]): Promise<void> {
+  await fsp.mkdir(pathJoin(osHomedir(), '.airabot'), { recursive: true });
+  await fsp.writeFile(TASK_HISTORY_PATH, JSON.stringify(history, null, 2));
+  historyCache = history;
+}
+
+export class TaskEstimator {
+  private history: TaskHistoryEntry[] = [];
+
+  async load(): Promise<void> {
+    this.history = await loadHistory();
+  }
+
+  estimate(opts: { type: string; complexity: 'low' | 'medium' | 'high'; baseMinutes: number }): EstimateResult {
+    const mult = COMPLEXITY_MULT[opts.complexity] ?? 1.0;
+    const estimated = Math.round(opts.baseMinutes * mult);
+    const id = createHash('sha1').update(`${opts.type}:${Date.now()}`).digest('hex').slice(0, 8);
+
+    // Find EMA accuracy for this type
+    const typeHistory = this.history.filter((h) => h.type === opts.type && h.actualMinutes != null);
+    const ema = typeHistory.length > 0 ? typeHistory[typeHistory.length - 1]?.emaAccuracy ?? 1.0 : 1.0;
+    const adjustedEstimate = Math.round(estimated * (ema < 0.5 ? 1 / ema : 1));
+
+    // Range: ±25%
+    const rangeMin = Math.round(adjustedEstimate * 0.75);
+    const rangeMax = Math.round(adjustedEstimate * 1.25);
+    const confidence = Math.min(95, 50 + typeHistory.length * 5);
+
+    // Save to history
+    const entry: TaskHistoryEntry = {
+      id,
+      type: opts.type,
+      complexity: opts.complexity,
+      baseMinutes: opts.baseMinutes,
+      estimatedMinutes: adjustedEstimate,
+      createdAt: new Date().toISOString(),
+    };
+    this.history.push(entry);
+    saveHistory(this.history).catch(() => { /* ignore */ });
+
+    return { id, estimatedMinutes: adjustedEstimate, rangeMin, rangeMax, confidence };
+  }
+
+  async completeTask(id: string, actualMinutes: number): Promise<void> {
+    const entry = this.history.find((h) => h.id === id);
+    if (!entry) throw new Error(`Task ${id} not found`);
+
+    const ratio = actualMinutes / entry.estimatedMinutes;
+    const alpha = 0.3;
+    const prevEma = entry.emaAccuracy ?? 1.0;
+    entry.emaAccuracy = alpha * ratio + (1 - alpha) * prevEma;
+    entry.actualMinutes = actualMinutes;
+    entry.completedAt = new Date().toISOString();
+
+    await saveHistory(this.history);
+  }
+
+  getAccuracyReport(): AccuracyReport {
+    const completed = this.history.filter((h) => h.actualMinutes != null);
+    if (completed.length === 0) return { overall: 1.0, byType: {} };
+
+    const byType: Record<string, number[]> = {};
+    for (const h of completed) {
+      if (!byType[h.type]) byType[h.type] = [];
+      byType[h.type]!.push(h.actualMinutes! / h.estimatedMinutes);
+    }
+
+    const typeAccuracy: Record<string, number> = {};
+    for (const [type, ratios] of Object.entries(byType)) {
+      const avg = ratios.reduce((a, b) => a + b, 0) / ratios.length;
+      // accuracy = 1 - abs(1 - ratio), clamped to 0-1
+      typeAccuracy[type] = Math.max(0, 1 - Math.abs(1 - avg));
+    }
+
+    const overall =
+      Object.values(typeAccuracy).reduce((a, b) => a + b, 0) /
+      Object.values(typeAccuracy).length;
+
+    return { overall, byType: typeAccuracy };
+  }
+}
