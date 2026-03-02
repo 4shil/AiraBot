@@ -271,3 +271,72 @@ export const manglish = {
   detect: (text: string) => KeralaUtils.isManglish(text),
   remind: (task: string) => KeralaUtils.generateManglishReminder(task),
 };
+
+// ─── Live festival calendar with Calendarific API ─────────────────────────────
+
+import { promises as fsp } from 'fs';
+import { join as pjoin } from 'path';
+import { homedir as oHomedir } from 'os';
+
+const CACHE_DIR = pjoin(oHomedir(), '.airabot');
+
+async function readConfig(): Promise<Record<string, string>> {
+  try {
+    return JSON.parse(await fsp.readFile(pjoin(CACHE_DIR, 'config.json'), 'utf-8'));
+  } catch { return {}; }
+}
+
+export async function fetchFestivals(year: number): Promise<KeralaFestival[]> {
+  const cacheFile = pjoin(CACHE_DIR, `festivals-${year}.json`);
+
+  // Check cache first
+  try {
+    const cached = JSON.parse(await fsp.readFile(cacheFile, 'utf-8')) as KeralaFestival[];
+    if (Array.isArray(cached) && cached.length > 0) return cached;
+  } catch { /* cache miss */ }
+
+  const config = await readConfig();
+  const apiKey = process.env.CALENDARIFIC_API_KEY ?? config['calendarificApiKey'];
+
+  if (!apiKey) {
+    // Fall back to hardcoded
+    return KeralaUtils.getKeralaFestivals(year);
+  }
+
+  try {
+    const url = `https://calendarific.com/api/v2/holidays?api_key=${apiKey}&country=IN&year=${year}&location=in-kl`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`Calendarific API error: ${res.status}`);
+    const json = await res.json() as { response?: { holidays?: Array<{ name: string; date: { iso: string }; description: string }> } };
+    const holidays = json.response?.holidays ?? [];
+
+    const festivals: KeralaFestival[] = holidays.map((h) => ({
+      name: h.name,
+      date: new Date(h.date.iso),
+      description: h.description ?? '',
+      isHoliday: true,
+    }));
+
+    // Merge with hardcoded and deduplicate by name+month
+    const hardcoded = KeralaUtils.getKeralaFestivals(year);
+    const names = new Set(festivals.map((f) => f.name.toLowerCase()));
+    for (const hf of hardcoded) {
+      if (!names.has(hf.name.toLowerCase())) festivals.push(hf);
+    }
+
+    // Cache results
+    await fsp.mkdir(CACHE_DIR, { recursive: true });
+    await fsp.writeFile(cacheFile, JSON.stringify(festivals, null, 2));
+    return festivals;
+  } catch {
+    return KeralaUtils.getKeralaFestivals(year);
+  }
+}
+
+export async function getUpcomingFestivals(days: number): Promise<KeralaFestival[]> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const all = await fetchFestivals(year);
+  const cutoff = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  return all.filter((f) => f.date >= now && f.date <= cutoff).sort((a, b) => a.date.getTime() - b.date.getTime());
+}
