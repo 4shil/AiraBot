@@ -6,6 +6,34 @@
   "bin": {
     "airabot": "./dist/entry.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "kerala",
+    "manglish",
+    "cli",
+    "productivity",
+    "chatbot",
+    "malayali",
+    "nlp"
+  ],
+  "homepage": "https://github.com/4shil/AiraBot",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/4shil/AiraBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/4shil/AiraBot/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
