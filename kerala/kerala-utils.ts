@@ -340,3 +340,96 @@ export async function getUpcomingFestivals(days: number): Promise<KeralaFestival
   const cutoff = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
   return all.filter((f) => f.date >= now && f.date <= cutoff).sort((a, b) => a.date.getTime() - b.date.getTime());
 }
+
+// ─── IST-aware smart scheduling ───────────────────────────────────────────────
+
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+// @ts-ignore — dayjs plugin extend
+dayjs.extend(customParseFormat);
+// @ts-ignore
+dayjs.extend(utc);
+// @ts-ignore
+dayjs.extend(timezone);
+
+const IST_TZ = 'Asia/Kolkata';
+const REMINDERS_PATH = pjoin(oHomedir(), '.airabot', 'reminders.json');
+
+export interface ReminderEntry {
+  id: string;
+  message: string;
+  timeIST: string;
+  utcTime: string;
+  scheduledAt: string;
+}
+
+function parseTimeIST(timeStr: string): dayjs.Dayjs | null {
+  const now = dayjs().tz(IST_TZ);
+  const str = timeStr.trim().toLowerCase();
+
+  // "tomorrow 9am" or "tomorrow 09:00"
+  if (str.startsWith('tomorrow')) {
+    const rest = str.replace('tomorrow', '').trim();
+    const base = now.add(1, 'day');
+    return parseTimeOnDay(rest, base);
+  }
+
+  // "8pm", "20:00", "8:30pm"
+  return parseTimeOnDay(str, now);
+}
+
+function parseTimeOnDay(timeStr: string, base: dayjs.Dayjs): dayjs.Dayjs | null {
+  // Try 12h format: "8pm", "8:30pm"
+  const match12 = timeStr.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
+  if (match12) {
+    let hours = parseInt(match12[1]!, 10);
+    const mins = parseInt(match12[2] ?? '0', 10);
+    const ampm = match12[3]!.toLowerCase();
+    if (ampm === 'pm' && hours < 12) hours += 12;
+    if (ampm === 'am' && hours === 12) hours = 0;
+    return base.hour(hours).minute(mins).second(0);
+  }
+
+  // Try 24h format: "20:00"
+  const match24 = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+  if (match24) {
+    return base.hour(parseInt(match24[1]!, 10)).minute(parseInt(match24[2]!, 10)).second(0);
+  }
+
+  return null;
+}
+
+export async function scheduleReminder(message: string, timeIST: string): Promise<void> {
+  const istTime = parseTimeIST(timeIST);
+  if (!istTime) throw new Error(`Could not parse time: "${timeIST}"`);
+
+  const utcTime = istTime.utc();
+  const atFormat = utcTime.format('HH:mm YYYY-MM-DD'); // at(1) compatible
+
+  const safeMsg = message.replace(/'/g, "\\'");
+  const cmd = `echo "notify-send 'AiraBot Reminder' '${safeMsg}'" | at ${atFormat}`;
+
+  try {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    await promisify(exec)(cmd);
+  } catch (err) {
+    // at may not be installed — log reminder anyway
+  }
+
+  // Persist to reminders.json
+  await fsp.mkdir(CACHE_DIR, { recursive: true });
+  let reminders: ReminderEntry[] = [];
+  try { reminders = JSON.parse(await fsp.readFile(REMINDERS_PATH, 'utf-8')); } catch { /* ok */ }
+  reminders.push({
+    id: Math.random().toString(36).slice(2),
+    message,
+    timeIST: istTime.tz(IST_TZ).format('YYYY-MM-DD HH:mm'),
+    utcTime: utcTime.format('YYYY-MM-DD HH:mm'),
+    scheduledAt: new Date().toISOString(),
+  });
+  await fsp.writeFile(REMINDERS_PATH, JSON.stringify(reminders, null, 2));
+}
