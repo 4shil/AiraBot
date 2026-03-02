@@ -233,3 +233,60 @@ export async function getPersonalityEvolution(
   }
   return globalEvolution;
 }
+
+// ─── Profile persistence to ~/.airabot/personality-profile.json ──────────────
+
+const PROFILE_PATH = join(homedir(), '.airabot', 'personality-profile.json');
+
+export interface PersonalityProfile {
+  traits: PersonalityTraits;
+  traitWeights: Record<keyof PersonalityTraits, number>;
+  interactionCount: number;
+  lastSaved: string;
+}
+
+export async function saveProfile(traits: PersonalityTraits): Promise<void> {
+  try {
+    await fs.mkdir(join(homedir(), '.airabot'), { recursive: true });
+    let existing: Partial<PersonalityProfile> = {};
+    try {
+      existing = JSON.parse(await fs.readFile(PROFILE_PATH, 'utf-8'));
+    } catch { /* first time */ }
+
+    const profile: PersonalityProfile = {
+      traits,
+      traitWeights: (existing.traitWeights as Record<keyof PersonalityTraits, number>) ?? Object.fromEntries(
+        Object.keys(traits).map((k) => [k, 1.0])
+      ) as Record<keyof PersonalityTraits, number>,
+      interactionCount: (existing.interactionCount ?? 0) + 1,
+      lastSaved: new Date().toISOString(),
+    };
+    await fs.writeFile(PROFILE_PATH, JSON.stringify(profile, null, 2));
+  } catch (err) {
+    // Non-critical
+  }
+}
+
+export async function loadProfile(): Promise<PersonalityProfile | null> {
+  try {
+    const data = await fs.readFile(PROFILE_PATH, 'utf-8');
+    return JSON.parse(data) as PersonalityProfile;
+  } catch {
+    return null;
+  }
+}
+
+export async function evolveTraitWeights(
+  profile: PersonalityProfile,
+  positiveFeedback: boolean,
+  activeTrait: keyof PersonalityTraits,
+): Promise<PersonalityProfile> {
+  const alpha = 0.05;
+  const current = profile.traitWeights[activeTrait] ?? 1.0;
+  profile.traitWeights[activeTrait] = positiveFeedback
+    ? Math.min(2.0, current + alpha)
+    : Math.max(0.1, current - alpha);
+  profile.lastSaved = new Date().toISOString();
+  await fs.writeFile(PROFILE_PATH, JSON.stringify(profile, null, 2));
+  return profile;
+}
