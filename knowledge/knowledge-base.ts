@@ -375,3 +375,84 @@ export async function getKnowledgeBase(workspaceDir?: string): Promise<Knowledge
   }
   return globalKB;
 }
+
+// ─── TF-IDF semantic search ───────────────────────────────────────────────────
+
+const STOPWORDS = new Set([
+  'a','an','the','is','are','was','were','be','been','being','have','has','had',
+  'do','does','did','will','would','should','could','can','may','might','shall',
+  'to','of','in','on','at','by','for','with','about','from','this','that','these',
+  'those','it','its','i','my','your','our','their','and','or','but','not','no',
+  'as','if','then','so','up','out','what','which','who','when','where','how',
+]);
+
+export function generateSearchVector(content: string): string {
+  return content
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w))
+    .join(' ');
+}
+
+function buildTermFrequency(text: string): Map<string, number> {
+  const words = generateSearchVector(text).split(/\s+/).filter(Boolean);
+  const freq = new Map<string, number>();
+  for (const word of words) {
+    freq.set(word, (freq.get(word) ?? 0) + 1);
+  }
+  // Normalize
+  const max = Math.max(...freq.values(), 1);
+  for (const [k, v] of freq) freq.set(k, v / max);
+  return freq;
+}
+
+export interface TFIDFSearchResult {
+  entry: KnowledgeEntry;
+  score: number;
+  excerpt: string;
+}
+
+export function tfidfSearch(
+  entries: KnowledgeEntry[],
+  query: string,
+  limit = 5,
+): TFIDFSearchResult[] {
+  const queryTerms = generateSearchVector(query).split(/\s+/).filter(Boolean);
+  if (queryTerms.length === 0 || entries.length === 0) return [];
+
+  // Build IDF: log(N / df)
+  const N = entries.length;
+  const df = new Map<string, number>();
+  for (const entry of entries) {
+    const words = new Set(generateSearchVector(entry.title + ' ' + entry.content).split(/\s+/));
+    for (const w of words) df.set(w, (df.get(w) ?? 0) + 1);
+  }
+
+  const idf = (term: string): number => {
+    const docFreq = df.get(term) ?? 0;
+    return docFreq === 0 ? 0 : Math.log(N / docFreq + 1);
+  };
+
+  const scored = entries.map((entry) => {
+    const tf = buildTermFrequency(entry.title + ' ' + entry.content);
+    let score = 0;
+    for (const term of queryTerms) {
+      score += (tf.get(term) ?? 0) * idf(term);
+    }
+    // Title boost
+    if (entry.title.toLowerCase().includes(query.toLowerCase())) score += 2;
+    // Tag boost
+    for (const tag of entry.tags) {
+      if (queryTerms.includes(tag.toLowerCase())) score += 1;
+    }
+
+    const excerpt = entry.content.substring(0, 150) + (entry.content.length > 150 ? '…' : '');
+    return { entry, score, excerpt };
+  });
+
+  return scored
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
