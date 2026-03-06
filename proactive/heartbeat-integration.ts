@@ -1,6 +1,6 @@
 /**
  * Heartbeat Integration
- * Integrates proactive intelligence with OpenClaw's heartbeat system
+ * Integrates proactive intelligence with AiraBot's heartbeat system
  */
 
 import { getProactiveMonitor } from "./proactive-monitor.js";

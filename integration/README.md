@@ -68,7 +68,7 @@ All features support Manglish queries:
 
 ## Integration with Existing Systems
 
-AiraBot enhances existing OpenClaw with:
+AiraBot enhances existing AiraBot with:
 - Personality engine (already in repo)
 - Proactive intelligence (already in repo)
 - Kerala/Malayali features

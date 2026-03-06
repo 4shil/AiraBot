@@ -776,7 +776,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
     // schema changes between versions, preventing a startup validation crash.
     const doctorArgv = [process.execPath, doctorEntry, "doctor", "--non-interactive", "--fix"];
     const doctorStep = await runStep(
-      step("airabot doctor", doctorArgv, gitRoot, { OPENCLAW_UPDATE_IN_PROGRESS: "1" }),
+      step("airabot doctor", doctorArgv, gitRoot, { AIRABOT_UPDATE_IN_PROGRESS: "1" }),
     );
     steps.push(doctorStep);
 

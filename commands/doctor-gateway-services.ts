@@ -55,7 +55,7 @@ function resolveGatewayAuthToken(cfg: AiraBotConfig, env: NodeJS.ProcessEnv): st
   if (configToken) {
     return configToken;
   }
-  const envToken = env.OPENCLAW_GATEWAY_TOKEN ?? env.CLAWDBOT_GATEWAY_TOKEN;
+  const envToken = env.AIRABOT_GATEWAY_TOKEN ?? env.CLAWDBOT_GATEWAY_TOKEN;
   const trimmedEnvToken = envToken?.trim();
   return trimmedEnvToken || undefined;
 }

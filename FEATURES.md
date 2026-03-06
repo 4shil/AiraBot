@@ -1,6 +1,6 @@
 # 🤖 AiraBot - Next-Generation AI Assistant
 
-**AiraBot** is an intelligent fork of OpenClaw with advanced personality, proactive intelligence, and Kerala-specific features.
+**AiraBot** is an intelligent fork of AiraBot with advanced personality, proactive intelligence, and Kerala-specific features.
 
 ## 🌟 Key Features
 
@@ -225,7 +225,7 @@ Edit `~/.airabot/config.json`:
 
 ## 📝 Commit History (32 Total)
 
-1-5: OpenClaw → AiraBot rebranding  
+1-5: AiraBot → AiraBot rebranding  
 6-15: Personality & Emotion Engine  
 16-25: Proactive Intelligence  
 26: Smart Clipboard  
@@ -242,11 +242,11 @@ Fork, feature branch, PR. Keep commits clean and descriptive.
 
 ## 📜 License
 
-Same as OpenClaw (check original repo)
+Same as AiraBot (check original repo)
 
 ## 🙏 Credits
 
-Built on top of [OpenClaw](https://github.com/openclaw/openclaw) by the OpenClaw team.
+Built on top of [AiraBot](https://github.com/airabot/airabot) by the AiraBot team.
 
 Enhanced with AI personality, proactive intelligence, and Kerala features by 4shil.
 

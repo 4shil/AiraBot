@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 
-declare const __OPENCLAW_VERSION__: string | undefined;
+declare const __AIRABOT_VERSION__: string | undefined;
 const CORE_PACKAGE_NAME = "airabot";
 
 const PACKAGE_JSON_CANDIDATES = [
@@ -81,8 +81,8 @@ export function resolveRuntimeServiceVersion(
 ): string {
   return (
     firstNonEmpty(
-      env["OPENCLAW_VERSION"],
-      env["OPENCLAW_SERVICE_VERSION"],
+      env["AIRABOT_VERSION"],
+      env["AIRABOT_SERVICE_VERSION"],
       env["npm_package_version"],
     ) ?? fallback
   );
@@ -92,7 +92,7 @@ export function resolveRuntimeServiceVersion(
 // - Embedded/bundled builds: injected define or env var.
 // - Dev/npm builds: package.json.
 export const VERSION =
-  (typeof __OPENCLAW_VERSION__ === "string" && __OPENCLAW_VERSION__) ||
-  process.env.OPENCLAW_BUNDLED_VERSION ||
+  (typeof __AIRABOT_VERSION__ === "string" && __AIRABOT_VERSION__) ||
+  process.env.AIRABOT_BUNDLED_VERSION ||
   resolveVersionFromModuleUrl(import.meta.url) ||
   "0.0.0";

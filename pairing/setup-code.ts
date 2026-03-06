@@ -87,7 +87,7 @@ function normalizeUrl(raw: string, schemeFallback: "ws" | "wss"): string | null 
 }
 
 function resolveGatewayPort(cfg: AiraBotConfig, env: NodeJS.ProcessEnv): number {
-  const envRaw = env.OPENCLAW_GATEWAY_PORT?.trim() || env.CLAWDBOT_GATEWAY_PORT?.trim();
+  const envRaw = env.AIRABOT_GATEWAY_PORT?.trim() || env.CLAWDBOT_GATEWAY_PORT?.trim();
   if (envRaw) {
     const parsed = Number.parseInt(envRaw, 10);
     if (Number.isFinite(parsed) && parsed > 0) {
@@ -246,11 +246,11 @@ async function resolveTailnetHost(
 function resolveAuth(cfg: AiraBotConfig, env: NodeJS.ProcessEnv): ResolveAuthResult {
   const mode = cfg.gateway?.auth?.mode;
   const token =
-    env.OPENCLAW_GATEWAY_TOKEN?.trim() ||
+    env.AIRABOT_GATEWAY_TOKEN?.trim() ||
     env.CLAWDBOT_GATEWAY_TOKEN?.trim() ||
     cfg.gateway?.auth?.token?.trim();
   const password =
-    env.OPENCLAW_GATEWAY_PASSWORD?.trim() ||
+    env.AIRABOT_GATEWAY_PASSWORD?.trim() ||
     env.CLAWDBOT_GATEWAY_PASSWORD?.trim() ||
     cfg.gateway?.auth?.password?.trim();
 

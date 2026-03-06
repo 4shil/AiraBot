@@ -308,7 +308,7 @@ export async function finalizeOnboardingWizard(
     await prompter.note(
       [
         "Gateway token: shared auth for the Gateway + Control UI.",
-        "Stored in: ~/.airabot/airabot.json (gateway.auth.token) or OPENCLAW_GATEWAY_TOKEN.",
+        "Stored in: ~/.airabot/airabot.json (gateway.auth.token) or AIRABOT_GATEWAY_TOKEN.",
         `View token: ${formatCliCommand("airabot config get gateway.auth.token")}`,
         `Generate token: ${formatCliCommand("airabot doctor --generate-gateway-token")}`,
         "Web UI stores a copy in this browser's localStorage (airabot.control.settings.v1).",

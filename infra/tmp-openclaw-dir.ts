@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-export const POSIX_OPENCLAW_TMP_DIR = "/tmp/airabot";
+export const POSIX_AIRABOT_TMP_DIR = "/tmp/airabot";
 
 type ResolvePreferredAiraBotTmpDirOptions = {
   accessSync?: (path: string, mode?: number) => void;
@@ -67,15 +67,15 @@ export function resolvePreferredAiraBotTmpDir(
   };
 
   try {
-    const preferred = lstatSync(POSIX_OPENCLAW_TMP_DIR);
+    const preferred = lstatSync(POSIX_AIRABOT_TMP_DIR);
     if (!preferred.isDirectory() || preferred.isSymbolicLink()) {
       return fallback();
     }
-    accessSync(POSIX_OPENCLAW_TMP_DIR, fs.constants.W_OK | fs.constants.X_OK);
+    accessSync(POSIX_AIRABOT_TMP_DIR, fs.constants.W_OK | fs.constants.X_OK);
     if (!isSecureDirForUser(preferred)) {
       return fallback();
     }
-    return POSIX_OPENCLAW_TMP_DIR;
+    return POSIX_AIRABOT_TMP_DIR;
   } catch (err) {
     if (!isNodeErrorWithCode(err, "ENOENT")) {
       return fallback();
@@ -85,9 +85,9 @@ export function resolvePreferredAiraBotTmpDir(
   try {
     accessSync("/tmp", fs.constants.W_OK | fs.constants.X_OK);
     // Create with a safe default; subsequent callers expect it exists.
-    mkdirSync(POSIX_OPENCLAW_TMP_DIR, { recursive: true, mode: 0o700 });
+    mkdirSync(POSIX_AIRABOT_TMP_DIR, { recursive: true, mode: 0o700 });
     try {
-      const preferred = lstatSync(POSIX_OPENCLAW_TMP_DIR);
+      const preferred = lstatSync(POSIX_AIRABOT_TMP_DIR);
       if (!preferred.isDirectory() || preferred.isSymbolicLink()) {
         return fallback();
       }
@@ -97,7 +97,7 @@ export function resolvePreferredAiraBotTmpDir(
     } catch {
       return fallback();
     }
-    return POSIX_OPENCLAW_TMP_DIR;
+    return POSIX_AIRABOT_TMP_DIR;
   } catch {
     return fallback();
   }
