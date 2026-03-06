@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OpenClaw Canvas</title>
+    <title>AiraBot Canvas</title>
     <script>
       (() => {
         try {
@@ -42,19 +42,19 @@
           "Roboto",
           sans-serif;
         background:
-          radial-gradient(1200px 900px at 15% 20%, rgba(42, 113, 255, 0.18), rgba(0, 0, 0, 0) 55%),
-          radial-gradient(900px 700px at 85% 30%, rgba(255, 0, 138, 0.14), rgba(0, 0, 0, 0) 60%),
-          radial-gradient(1000px 900px at 60% 90%, rgba(0, 209, 255, 0.1), rgba(0, 0, 0, 0) 60%),
-          #000;
+          radial-gradient(1200px 900px at 15% 20%, rgba(16, 185, 129, 0.4), rgba(0, 0, 0, 0) 55%),
+          radial-gradient(900px 700px at 85% 30%, rgba(59, 130, 246, 0.3), rgba(0, 0, 0, 0) 60%),
+          radial-gradient(1000px 900px at 60% 90%, rgba(249, 115, 22, 0.25), rgba(0, 0, 0, 0) 60%),
+          #020617;
         color: #e5e7eb;
         overflow: hidden;
       }
       :root[data-platform="android"] body {
         background:
-          radial-gradient(1200px 900px at 15% 20%, rgba(42, 113, 255, 0.62), rgba(0, 0, 0, 0) 55%),
-          radial-gradient(900px 700px at 85% 30%, rgba(255, 0, 138, 0.52), rgba(0, 0, 0, 0) 60%),
-          radial-gradient(1000px 900px at 60% 90%, rgba(0, 209, 255, 0.48), rgba(0, 0, 0, 0) 60%),
-          #0b1328;
+          radial-gradient(1200px 900px at 15% 20%, rgba(16, 185, 129, 0.62), rgba(0, 0, 0, 0) 55%),
+          radial-gradient(900px 700px at 85% 30%, rgba(59, 130, 246, 0.52), rgba(0, 0, 0, 0) 60%),
+          radial-gradient(1000px 900px at 60% 90%, rgba(249, 115, 22, 0.48), rgba(0, 0, 0, 0) 60%),
+          #020617;
       }
       body::before {
         content: "";
@@ -81,7 +81,7 @@
         backface-visibility: hidden;
         opacity: 0.45;
         pointer-events: none;
-        animation: openclaw-grid-drift 140s ease-in-out infinite alternate;
+        animation: airabot-grid-drift 140s ease-in-out infinite alternate;
       }
       :root[data-platform="android"] body::before {
         opacity: 0.8;
@@ -91,9 +91,9 @@
         position: fixed;
         inset: -35%;
         background:
-          radial-gradient(900px 700px at 30% 30%, rgba(42, 113, 255, 0.16), rgba(0, 0, 0, 0) 60%),
-          radial-gradient(800px 650px at 70% 35%, rgba(255, 0, 138, 0.12), rgba(0, 0, 0, 0) 62%),
-          radial-gradient(900px 800px at 55% 75%, rgba(0, 209, 255, 0.1), rgba(0, 0, 0, 0) 62%);
+          radial-gradient(900px 700px at 30% 30%, rgba(16, 185, 129, 0.2), rgba(0, 0, 0, 0) 60%),
+          radial-gradient(800px 650px at 70% 35%, rgba(59, 130, 246, 0.15), rgba(0, 0, 0, 0) 62%),
+          radial-gradient(900px 800px at 55% 75%, rgba(249, 115, 22, 0.12), rgba(0, 0, 0, 0) 62%);
         filter: blur(28px);
         opacity: 0.52;
         will-change: transform, opacity;
@@ -101,7 +101,7 @@
         backface-visibility: hidden;
         transform: translate3d(0, 0, 0);
         pointer-events: none;
-        animation: openclaw-glow-drift 110s ease-in-out infinite alternate;
+        animation: airabot-glow-drift 110s ease-in-out infinite alternate;
       }
       :root[data-platform="android"] body::after {
         opacity: 0.85;
@@ -116,7 +116,7 @@
           opacity: 0.7;
         }
       }
-      @keyframes openclaw-grid-drift {
+      @keyframes airabot-grid-drift {
         0% {
           transform: translate3d(-12px, 8px, 0) rotate(-7deg);
           opacity: 0.4;
@@ -130,7 +130,7 @@
           opacity: 0.42;
         }
       }
-      @keyframes openclaw-glow-drift {
+      @keyframes airabot-glow-drift {
         0% {
           transform: translate3d(-18px, 12px, 0) scale(1.02);
           opacity: 0.4;
@@ -153,14 +153,14 @@
         touch-action: none;
         z-index: 1;
       }
-      :root[data-platform="android"] #openclaw-canvas {
+      :root[data-platform="android"] #airabot-canvas {
         background:
-          radial-gradient(1100px 800px at 20% 15%, rgba(42, 113, 255, 0.78), rgba(0, 0, 0, 0) 58%),
-          radial-gradient(900px 650px at 82% 28%, rgba(255, 0, 138, 0.66), rgba(0, 0, 0, 0) 62%),
-          radial-gradient(1000px 900px at 60% 88%, rgba(0, 209, 255, 0.58), rgba(0, 0, 0, 0) 62%),
-          #141c33;
+          radial-gradient(1100px 800px at 20% 15%, rgba(16, 185, 129, 0.78), rgba(0, 0, 0, 0) 58%),
+          radial-gradient(900px 650px at 82% 28%, rgba(59, 130, 246, 0.66), rgba(0, 0, 0, 0) 62%),
+          radial-gradient(1000px 900px at 60% 88%, rgba(249, 115, 22, 0.58), rgba(0, 0, 0, 0) 62%),
+          #0a0f1d;
       }
-      #openclaw-status {
+      #airabot-status {
         position: fixed;
         inset: 0;
         display: none;
@@ -172,75 +172,76 @@
         pointer-events: none;
         z-index: 3;
       }
-      #openclaw-status .card {
+      #airabot-status .card {
         width: min(560px, 88vw);
         text-align: left;
-        padding: 14px 16px 12px;
-        border-radius: 16px;
-        background: linear-gradient(140deg, rgba(23, 24, 35, 0.78), rgba(18, 19, 28, 0.55));
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 20px 24px;
+        border-radius: 24px;
+        background: linear-gradient(140deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+        border: 1px solid rgba(255, 255, 255, 0.15);
         box-shadow:
-          0 16px 46px rgba(0, 0, 0, 0.52),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        -webkit-backdrop-filter: blur(18px) saturate(140%);
-        backdrop-filter: blur(18px) saturate(140%);
+          0 20px 50px rgba(0, 0, 0, 0.6),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
       }
-      #openclaw-status .title {
+      #airabot-status .title {
         font:
-          600 12px/1.2 -apple-system,
+          700 13px/1.2 -apple-system,
           BlinkMacSystemFont,
           "SF Pro Text",
           system-ui,
           sans-serif;
-        letter-spacing: 0.45px;
+        letter-spacing: 0.8px;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.7);
+        color: #10b981; /* Emerald Green */
+        margin-bottom: 4px;
       }
-      #openclaw-status .subtitle {
+      #airabot-status .subtitle {
         margin-top: 8px;
         font:
-          500 13px/1.45 -apple-system,
+          500 15px/1.45 -apple-system,
           BlinkMacSystemFont,
           "SF Pro Text",
           system-ui,
           sans-serif;
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.95);
         white-space: pre-wrap;
         overflow-wrap: anywhere;
       }
-      openclaw-a2ui-host {
+      airabot-a2ui-host {
         display: block;
         height: 100%;
         position: fixed;
         inset: 0;
         z-index: 4;
-        --openclaw-a2ui-inset-top: 28px;
-        --openclaw-a2ui-inset-right: 0px;
-        --openclaw-a2ui-inset-bottom: 0px;
-        --openclaw-a2ui-inset-left: 0px;
-        --openclaw-a2ui-scroll-pad-bottom: 0px;
-        --openclaw-a2ui-status-top: calc(50% - 18px);
-        --openclaw-a2ui-empty-top: 18px;
+        --airabot-a2ui-inset-top: 28px;
+        --airabot-a2ui-inset-right: 0px;
+        --airabot-a2ui-inset-bottom: 0px;
+        --airabot-a2ui-inset-left: 0px;
+        --airabot-a2ui-scroll-pad-bottom: 0px;
+        --airabot-a2ui-status-top: calc(50% - 18px);
+        --airabot-a2ui-empty-top: 18px;
       }
     </style>
   </head>
   <body>
-    <canvas id="openclaw-canvas"></canvas>
-    <div id="openclaw-status">
+    <canvas id="airabot-canvas"></canvas>
+    <div id="airabot-status">
       <div class="card">
-        <div class="title" id="openclaw-status-title">Ready</div>
-        <div class="subtitle" id="openclaw-status-subtitle">Waiting for agent</div>
+        <div class="title" id="airabot-status-title">AiraBot Ready</div>
+        <div class="subtitle" id="airabot-status-subtitle">Waiting to assist you, machane!</div>
       </div>
     </div>
-    <openclaw-a2ui-host></openclaw-a2ui-host>
+    <airabot-a2ui-host></airabot-a2ui-host>
     <script src="a2ui.bundle.js"></script>
     <script>
       (() => {
-        const canvas = document.getElementById("openclaw-canvas");
+        const canvas = document.getElementById("airabot-canvas");
         const ctx = canvas.getContext("2d");
-        const statusEl = document.getElementById("openclaw-status");
-        const titleEl = document.getElementById("openclaw-status-title");
-        const subtitleEl = document.getElementById("openclaw-status-subtitle");
+        const statusEl = document.getElementById("airabot-status");
+        const titleEl = document.getElementById("airabot-status-title");
+        const subtitleEl = document.getElementById("airabot-status-subtitle");
         const debugStatusEnabledByQuery = (() => {
           try {
             const params = new URLSearchParams(window.location.search);
@@ -278,7 +279,7 @@
           statusEl.style.display = "none";
         }
 
-        window.__openclaw = {
+        window.__airabot = {
           canvas,
           ctx,
           setDebugStatusEnabled,
