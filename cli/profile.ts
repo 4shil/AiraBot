@@ -110,18 +110,18 @@ export function applyCliProfileEnv(params: {
   }
 
   // Convenience only: fill defaults, never override explicit env values.
-  env.OPENCLAW_PROFILE = profile;
+  env.AIRABOT_PROFILE = profile;
 
-  const stateDir = env.OPENCLAW_STATE_DIR?.trim() || resolveProfileStateDir(profile, env, homedir);
-  if (!env.OPENCLAW_STATE_DIR?.trim()) {
-    env.OPENCLAW_STATE_DIR = stateDir;
+  const stateDir = env.AIRABOT_STATE_DIR?.trim() || resolveProfileStateDir(profile, env, homedir);
+  if (!env.AIRABOT_STATE_DIR?.trim()) {
+    env.AIRABOT_STATE_DIR = stateDir;
   }
 
-  if (!env.OPENCLAW_CONFIG_PATH?.trim()) {
-    env.OPENCLAW_CONFIG_PATH = path.join(stateDir, "airabot.json");
+  if (!env.AIRABOT_CONFIG_PATH?.trim()) {
+    env.AIRABOT_CONFIG_PATH = path.join(stateDir, "airabot.json");
   }
 
-  if (profile === "dev" && !env.OPENCLAW_GATEWAY_PORT?.trim()) {
-    env.OPENCLAW_GATEWAY_PORT = "19001";
+  if (profile === "dev" && !env.AIRABOT_GATEWAY_PORT?.trim()) {
+    env.AIRABOT_GATEWAY_PORT = "19001";
   }
 }
