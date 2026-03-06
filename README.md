@@ -4,10 +4,10 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-Same%20as%20OpenClaw-lightgrey)](https://github.com/openclaw/openclaw)
+[![License](https://img.shields.io/badge/License-Same%20as%20AiraBot-lightgrey)](https://github.com/airabot/airabot)
 [![Made in Kerala](https://img.shields.io/badge/Made%20in-Kerala%20🌴-orange)](https://en.wikipedia.org/wiki/Kerala)
 
-AiraBot is a powerful fork of [OpenClaw](https://github.com/openclaw/openclaw) enhanced with emotional intelligence, proactive learning, productivity tools, and Kerala-specific features. Built for developers who want an assistant that *understands* them.
+AiraBot is a powerful fork of [AiraBot](https://github.com/airabot/airabot) enhanced with emotional intelligence, proactive learning, productivity tools, and Kerala-specific features. Built for developers who want an assistant that *understands* them.
 
 ---
 
@@ -248,7 +248,7 @@ Create `~/.airabot/config.json`:
 
 ## 📊 Feature Comparison
 
-| Feature | OpenClaw | AiraBot |
+| Feature | AiraBot | AiraBot |
 |---------|----------|---------|
 | Core AI Assistant | ✅ | ✅ |
 | Emotion Detection | ❌ | ✅ |
@@ -267,7 +267,7 @@ Create `~/.airabot/config.json`:
 ## 📖 Documentation
 
 - **[FEATURES.md](./FEATURES.md)** - Detailed feature documentation with code examples
-- **[OpenClaw Docs](https://docs.openclaw.ai)** - Original OpenClaw documentation
+- **[AiraBot Docs](https://docs.airabot.ai)** - Original AiraBot documentation
 
 ---
 
@@ -296,7 +296,7 @@ pnpm lint
 
 **32 Total Commits:**
 
-- **Commits 1-5:** OpenClaw → AiraBot rebranding
+- **Commits 1-5:** AiraBot → AiraBot rebranding
 - **Commits 6-15:** Personality & Emotion Engine (10 modules)
 - **Commits 16-25:** Proactive Intelligence (10 modules)
 - **Commit 26:** Smart Clipboard
@@ -325,7 +325,7 @@ Contributions welcome! Fork the repo, create a feature branch, and submit a PR.
 
 ## 🙏 Credits
 
-Built on top of [OpenClaw](https://github.com/openclaw/openclaw) by the OpenClaw team.
+Built on top of [AiraBot](https://github.com/airabot/airabot) by the AiraBot team.
 
 **Enhanced with:**
 - AI personality engine
@@ -340,7 +340,7 @@ Built on top of [OpenClaw](https://github.com/openclaw/openclaw) by the OpenClaw
 
 ## 📜 License
 
-Same as OpenClaw (check [original repo](https://github.com/openclaw/openclaw))
+Same as AiraBot (check [original repo](https://github.com/airabot/airabot))
 
 ---
 
