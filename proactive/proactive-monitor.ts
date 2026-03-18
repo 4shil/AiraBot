@@ -136,7 +136,9 @@ export class ProactiveMonitor {
 
       this.lastCheck = Date.now();
     } catch (error) {
-      console.error("Error during proactive check:", error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[AiraBot] Proactive check failed:", message);
+      result.insights.push(`⚠️ Monitor check failed: ${message}`);
     }
 
     return result;
