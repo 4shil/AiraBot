@@ -464,5 +464,4 @@ export class StandupGeneratorExt {
   }
 }
 
-// Re-export with same name expected by CLI
-export { StandupGeneratorExt as StandupGenerator };
+

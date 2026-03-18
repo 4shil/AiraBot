@@ -63,6 +63,10 @@ export class SmartClipboard {
   }
 
   async add(content: string, source?: string): Promise<string> {
+    // Deduplicate identical content
+    const existing = this.history.find((e) => e.content === content);
+    if (existing) return existing.id;
+
     // Generate ID
     const id = randomUUID();
 

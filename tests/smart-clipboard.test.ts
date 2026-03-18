@@ -27,7 +27,7 @@ describe('SmartClipboard', () => {
     cb.add('python is good for scripting');
     const results = cb.search('typescript');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0]!.content).toContain('typescript');
+    expect(results[0]!.entry.content).toContain('typescript');
   });
 
   it('clears all entries', () => {
