@@ -18,7 +18,7 @@ export interface ISTTime {
   formatted: string;
 }
 
-// Malayalam to English transliteration map (common words)
+// Malayalam to English transliteration map (comprehensive)
 const MANGLISH_MAP: Record<string, string> = {
   // Common phrases
   "entha": "what",
@@ -29,26 +29,116 @@ const MANGLISH_MAP: Record<string, string> = {
   "eppol": "when",
   "aaru": "who",
   "enthina": "why",
-  
+  "endina": "what for",
+  "ethra": "how much",
+  "ethu": "which",
+
   // Actions
   "cheyyada": "do it",
+  "cheyya": "do",
+  "cheythu": "did",
+  "cheyyunnu": "doing",
+  "cheyyanam": "need to do",
+  "cheythooda": "go do it",
   "kanikku": "show",
-  "thaada": "give",
+  "kaan": "see",
+  "kandu": "saw",
+  "kettu": "heard",
+  "ketta": "listen",
+  "tha": "give",
+  "thaada": "give me",
+  "thara": "will give",
   "vaa": "come",
+  "vannu": "came",
+  "poyi": "went",
   "po": "go",
   "nilkku": "stop",
-  
-  // Responses
+  "nirthu": "stopped",
+  "maati": "move",
+  "edukku": "take",
+  "ittu": "put",
+  "thurannu": "opened",
+  "adichu": "hit/type",
+  "vilichu": "called",
+  "parayu": "say",
+  "paranju": "said",
+  "vijarichu": "thought",
+  "paresichu": "searched",
+  "paresi": "search",
+
+  // Responses & Fillers
   "seri": "okay",
+  "seriyaa": "seriously",
   "pinne": "then",
+  "pinneammo": "of course",
   "machane": "dude",
+  "machi": "dude",
   "da": "dude",
+  "de": "dude",
   "ayy": "hey",
+  "ayyo": "oh no",
+  "alle": "right?",
+  "allelo": "isn't it",
+  "athaanu": "that's it",
+  "ath": "that",
+  "ithu": "this",
+  "ivide": "here",
+  "angane": "like that",
+  "appo": "so",
+  "pinneyanu": "then it is",
+
+  // Adjectives & Descriptions
   "poli": "awesome",
   "adipoli": "super awesome",
   "pwoli": "cool",
-  
-  // Tech terms (Malayalam + English)
+  "kidu": "great",
+  "mass": "massive/cool",
+  "veruthe": "just/simply",
+  "kuzhappam": "problem",
+  "kuzhappilla": "no problem",
+  "saramilla": "no worries",
+  "theeru": "fix/finish",
+  "kazhinju": "finished",
+  "thudangi": "started",
+  "nannayi": "got better",
+  "mosham": "bad",
+  "nalla": "good",
+  "valiya": "big",
+  "cheriya": "small",
+  "puthu": "new",
+  "pazhaya": "old",
+  "fast": "fast",
+  "madi": "lazy",
+
+  // People & Relationships
+  "njan": "I",
+  "ava": "she",
+  "avan": "he",
+  "nammal": "we",
+  "avar": "they",
+  "thaan": "you (formal)",
+  "nee": "you",
+  "ettelavum": "most",
+  "sahodaran": "brother",
+  "sahodari": "sister",
+  "achan": "father",
+  "amma": "mother",
+  "makan": "son",
+  "makal": "daughter",
+
+  // Time
+  "innu": "today",
+  " nale": "tomorrow",
+  "minjal": "yesterday",
+  "raavil": "morning",
+  "ravile": "in the morning",
+  "mannu": "afternoon",
+  "athra": "evening",
+  "raathri": "night",
+  "irikku": "sitting",
+  "kidannu": "lying down",
+
+  // Tech terms
   "commit": "commit",
   "push": "push",
   "pull": "pull",
@@ -56,6 +146,43 @@ const MANGLISH_MAP: Record<string, string> = {
   "build": "build",
   "run": "run",
   "test": "test",
+  "deploy": "deploy",
+  "bug": "bug",
+  "fix": "fix",
+  "merge": "merge",
+  "branch": "branch",
+  "repo": "repo",
+  "install": "install",
+  "update": "update",
+  "restart": "restart",
+  "reload": "reload",
+  "save": "save",
+  "delete": "delete",
+
+  // Common expressions
+  "enthaa": "what is it",
+  "ketto": "did you hear",
+  "ariyilla": "don't know",
+  "ariyam": "know",
+  "manasilayi": "understood",
+  "manasilavilla": "don't understand",
+  "shemamaayi": "cool/great",
+  "kidu aayi": "became great",
+  "adipoli aayi": "became awesome",
+  "poli aayi": "turned out great",
+  "set aayi": "it's set/done",
+  "ready aayi": "it's ready",
+  "kashtam": "difficult/hard",
+  "eluppam": "easy",
+  "kooduthal": "more",
+  "kuranju": "less",
+  "ooru": "town/village",
+  "naadu": "land/country",
+  "veetil": "at home",
+  "schoolil": "at school",
+  "collegil": "at college",
+  "workil": "at work",
+  "officeil": "at office",
 };
 
 export class KeralaUtils {
@@ -348,11 +475,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
 
-// @ts-ignore — dayjs plugin extend
 dayjs.extend(customParseFormat);
-// @ts-ignore
 dayjs.extend(utc);
-// @ts-ignore
 dayjs.extend(timezone);
 
 const IST_TZ = 'Asia/Kolkata';
