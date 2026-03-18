@@ -6,7 +6,7 @@
 import { promises as fs } from "fs";
 import { join } from "path";
 import { homedir } from "os";
-import { createHash } from "crypto";
+import { randomUUID } from "crypto";
 
 export type ClipboardCategory = "code" | "link" | "text" | "command" | "json" | "credential" | "other";
 
@@ -64,7 +64,7 @@ export class SmartClipboard {
 
   async add(content: string, source?: string): Promise<string> {
     // Generate ID
-    const id = createHash("md5").update(content + Date.now()).digest("hex").substring(0, 12);
+    const id = randomUUID();
 
     // Detect category
     const category = this.detectCategory(content);
