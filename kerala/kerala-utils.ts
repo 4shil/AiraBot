@@ -219,7 +219,8 @@ export class KeralaUtils {
     return new Date(target.getTime() - istOffset);
   }
 
-  // Get Kerala festivals for current year
+  // Get Kerala festivals for current year (approximate dates — lunar festivals shift yearly)
+  // NOTE: For accurate dates, use fetchFestivals() which queries Calendarific API
   static getKeralaFestivals(year?: number): KeralaFestival[] {
     const y = year || new Date().getFullYear();
 
@@ -227,35 +228,35 @@ export class KeralaUtils {
       {
         name: "Onam",
         nameML: "ഓണം",
-        date: new Date(y, 8, 15), // Approximate - August/September
+        date: new Date(y, 8, 15), // Approximate — actual date varies by Malayalam calendar
         type: "harvest",
         description: "Harvest festival celebrating King Mahabali's return",
       },
       {
         name: "Vishu",
         nameML: "വിഷു",
-        date: new Date(y, 3, 14), // April 14
+        date: new Date(y, 3, 14), // April 14 (fixed — solar calendar)
         type: "harvest",
         description: "Malayalam New Year",
       },
       {
         name: "Thiruvathira",
         nameML: "തിരുവാതിര",
-        date: new Date(y, 11, 25), // December/January
+        date: new Date(y, 11, 25), // Approximate — varies by Malayalam month
         type: "religious",
         description: "Women's festival for Lord Shiva",
       },
       {
         name: "Kerala Piravi",
         nameML: "കേരള പിറവി",
-        date: new Date(y, 10, 1), // November 1
+        date: new Date(y, 10, 1), // November 1 (fixed)
         type: "state",
         description: "Kerala Formation Day",
       },
       {
         name: "Makaravilakku",
         nameML: "മകരവിളക്ക്",
-        date: new Date(y, 0, 14), // January 14
+        date: new Date(y, 0, 14), // January 14 (fixed)
         type: "religious",
         description: "Festival at Sabarimala",
       },
